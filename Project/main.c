@@ -39,8 +39,8 @@ void main()
 
 		led_toggle(LED_RED);
 		led_toggle(LED_BLUE);
-		
-		uart_send('p');
+		if (uart_new_data())
+			uart_send(uart_read());
 	}
 }
 

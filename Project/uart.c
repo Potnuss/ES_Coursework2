@@ -9,7 +9,8 @@ void uart_init()
 	
 	UART2_BDL = 27; //select baud rate
 	
-	UART2_C2 |= UART_C2_TE_MASK; //Enable transmission
+	UART2_C2 |= UART_C2_TE_MASK; //TE enables the UART transmitter
+	UART2_C2 |= UART_C2_RE_MASK; //RE enables the UART receiver.
 
 	// Configure the UART pins to be 
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
@@ -17,6 +18,18 @@ void uart_init()
 }
 
 void uart_send(char data)
-{
+{	
+	while(!(UART2_S1 & UART_S1_TDRE_MASK )){}          // wait for Transmit Data Register Empty Flag
 	UART2_D = data;
+}
+
+char uart_read()
+{
+	while(!(UART2_S1 & UART_S1_RDRF_MASK)){}           // wait for Receive Data Register Full Flag
+	return UART2_D;
+}
+
+int uart_new_data()
+{
+	return (UART2_S1 & UART_S1_RDRF_MASK);           // return Receive Data Register Full Flag
 }
