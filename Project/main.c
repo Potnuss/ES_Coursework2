@@ -7,6 +7,7 @@
 
 #include "main.h"
 #include "led.h"
+#include "uart.h"
 
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
@@ -22,12 +23,15 @@ void __init_hardware()
 	// Configure the MCG - set up clock dividers on 
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(0) | SIM_CLKDIV1_OUTDIV3(1) | SIM_CLKDIV1_OUTDIV4(1);
 	MCG_C1 = MCG_C1_CLKS(2);
-
+	
+	
+	uart_init();
 	led_init();
 }
 
 void main()
 {
+	char temp;
 	while(1)
 	{
 		int timer = 10000000;
@@ -35,6 +39,8 @@ void main()
 
 		led_toggle(LED_RED);
 		led_toggle(LED_BLUE);
+		
+		uart_send('p');
 	}
 }
 
