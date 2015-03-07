@@ -4,11 +4,12 @@
  */
 
 #include "MK70F12.h"
-
 #include "main.h"
 #include "led.h"
 #include "uart.h"
-
+#include "filter.h"
+#include "fpu.h"
+#define EnableInterrupts asm(" CPSIE i");
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
 void __init_hardware()
@@ -27,20 +28,17 @@ void __init_hardware()
 	
 	uart_init();
 	led_init();
+	fpu_init();
 }
 
 void main()
 {
-	char temp;
+	//EnableInterrupts;
 	while(1)
 	{
-		int timer = 10000000;
-		while(timer--) ;
-
-		led_toggle(LED_RED);
-		led_toggle(LED_BLUE);
-		if (uart_new_data())
-			uart_send(uart_read());
+		if (uart_new_data()){
+			uart_send(filter1(uart_read()));
+		}
 	}
 }
 

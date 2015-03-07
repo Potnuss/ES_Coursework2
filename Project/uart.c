@@ -12,9 +12,12 @@ void uart_init()
 	UART2_C2 |= UART_C2_TE_MASK; //TE enables the UART transmitter
 	UART2_C2 |= UART_C2_RE_MASK; //RE enables the UART receiver.
 
+	//UART2_C2 |= UART_C2_RIE_MASK;//
 	// Configure the UART pins to be 
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
 	PORTE_PCR16 = PORT_PCR_MUX(3);//transmission	
+
+
 }
 
 void uart_send(char data)
