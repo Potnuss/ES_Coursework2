@@ -9,14 +9,21 @@ void uart_init()
 	
 	UART2_BDL = 27; //select baud rate
 	
+	UART2_C2 |= UART_C2_RIE_MASK;//Enable Interrupt when recieve data//TODO better comment
+
 	UART2_C2 |= UART_C2_TE_MASK; //TE enables the UART transmitter
 	UART2_C2 |= UART_C2_RE_MASK; //RE enables the UART receiver.
 
-	//UART2_C2 |= UART_C2_RIE_MASK;//
+
+
 	// Configure the UART pins to be 
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
 	PORTE_PCR16 = PORT_PCR_MUX(3);//transmission	
+	
 
+	NVICICPR1 |= 1 << (49 % 32);
+	NVICISER1 |= 1 << (49 % 32);
+	NVICIP65 |= 2;
 
 }
 

@@ -33,7 +33,7 @@ void __init_hardware()
 
 void main()
 {
-	//EnableInterrupts;
+	EnableInterrupts;
 	while(1)
 	{
 		if (uart_new_data()){
