@@ -9,6 +9,7 @@
 #include "uart.h"
 #include "filter.h"
 #include "fpu.h"
+#include "pit.h"
 #define EnableInterrupts asm(" CPSIE i");
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
@@ -29,7 +30,9 @@ void __init_hardware()
 	uart_init();
 	led_init();
 	fpu_init();
+	pit_init(1000000);
 }
+int timer = 0;
 
 void main()
 {
@@ -44,5 +47,11 @@ void uart_handler(void)
 
 void pit_handler(void)
 {
-	uart_send(filter1(uart_read()));
+
+	if(timer >= 1000000) 
+	{
+		led_toggle(LED_BLUE);
+		timer = 0;
+	}
+	timer++;
 }

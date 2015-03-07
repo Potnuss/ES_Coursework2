@@ -133,7 +133,7 @@ volatile __declspec(vectortable) vt_with_sp_t __vect_table = {
 		default_isr,  		// 0x51 CMT
 		default_isr,  		// 0x52 RTC
 		default_isr,  		// 0x53 Reserved
-		default_isr,		// 0x54 PIT0
+		pit_handler,//default_isr,		// 0x54 PIT0
 		default_isr,  		// 0x55 PIT1
 		default_isr,  		// 0x56 PIT2
 		default_isr,  		// 0x57 PIT3

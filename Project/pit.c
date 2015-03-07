@@ -1,5 +1,5 @@
 /* periodic interrupt timer delivers interrupts and can be used to poll for TSI */
-#include "PIT.h"
+#include "pit.h"
 #include "MK70F12.h"
 
 void pit_init(int time)
