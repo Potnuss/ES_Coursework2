@@ -34,12 +34,15 @@ void __init_hardware()
 void main()
 {
 	EnableInterrupts;
-	while(1)
-	{
-		if (uart_new_data()){
-			uart_send(filter1(uart_read()));
-		}
-	}
+	while(1){}
 }
 
+void uart_handler(void)
+{
+	uart_send(filter1(uart_read()));
+}
 
+void pit_handler(void)
+{
+	uart_send(filter1(uart_read()));
+}

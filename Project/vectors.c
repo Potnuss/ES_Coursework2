@@ -114,7 +114,7 @@ volatile __declspec(vectortable) vt_with_sp_t __vect_table = {
 		default_isr,  		// 0x3E UART0_ERR
 		default_isr, 		// 0x3F UART1_RX_TX
 		default_isr,  		// 0x40 UART1_ERR 
-		default_isr,	 	// 0x41 UART2_RX_TX
+		uart_handler,//default_isr,	 	// 0x41 UART2_RX_TX
 		default_isr,  		// 0x42 UART2_ERR
 		default_isr, 		// 0x43 UART3_RX_TX
 		default_isr,  		// 0x44 UART3_ERR

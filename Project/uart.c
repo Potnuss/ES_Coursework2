@@ -20,7 +20,7 @@ void uart_init()
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
 	PORTE_PCR16 = PORT_PCR_MUX(3);//transmission	
 	
-
+	//Nested Vectored Interrupt Controller 
 	NVICICPR1 |= 1 << (49 % 32);
 	NVICISER1 |= 1 << (49 % 32);
 	NVICIP65 |= 2;
