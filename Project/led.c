@@ -23,11 +23,11 @@ void led_on(int led_id)
 {
 	switch(led_id)
 	{
+		case LED_BLUE:
+			GPIOA_PCOR = BIT_BLUE;	
+			break;	
 		case LED_RED:
 			GPIOA_PCOR = BIT_RED;
-			break;
-		case LED_BLUE:
-			GPIOA_PCOR = BIT_BLUE;
 			break;
 		case LED_YELLOW:
 			GPIOA_PCOR = BIT_YELLOW;
@@ -42,11 +42,11 @@ void led_off(int led_id)
 {
 	switch(led_id)
 	{
-		case LED_RED:		
-			GPIOA_PSOR = BIT_RED;
-			break;
 		case LED_BLUE:
 			GPIOA_PSOR = BIT_BLUE;
+			break;
+		case LED_RED:		
+			GPIOA_PSOR = BIT_RED;
 			break;
 		case LED_YELLOW:
 			GPIOA_PSOR = BIT_YELLOW;
@@ -61,11 +61,11 @@ void led_toggle(int led_id)
 {
 	switch(led_id)
 	{
-		case LED_RED:		
-			GPIOA_PTOR = BIT_RED;
-			break;
 		case LED_BLUE:
 			GPIOA_PTOR = BIT_BLUE;
+			break;
+		case LED_RED:		
+			GPIOA_PTOR = BIT_RED;
 			break;
 		case LED_YELLOW:
 			GPIOA_PTOR = BIT_YELLOW;

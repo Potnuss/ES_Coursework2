@@ -7,19 +7,8 @@
 
 static float xv[NZEROS+1]; 
 static float yv[NPOLES+1];
-/*
-extern void filterloop()
-  { for (;;)
-      { xv[0] = xv[1]; xv[1] = xv[2]; 
-        xv[2] = next input value / GAIN;
-        yv[0] = yv[1]; yv[1] = yv[2]; 
-        yv[2] =   (xv[2] - xv[0])
-                     + ( -0.6681786379 * yv[0]) + (  1.4142135624 * yv[1]);
-        next output value = yv[2];
-      }
-  }
-*/
-  extern signed char filter1(signed char input)
+
+  extern signed char filter(signed char input, int mode)
   { 
     xv[0] = xv[1]; 
     xv[1] = xv[2]; 
