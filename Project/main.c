@@ -36,7 +36,9 @@ void __init_hardware()
 	pit_init(1000000);
 	tsi_init();
 }
-int timer = 0;
+int timer = 1000000;
+int timer2 = 1000000;
+int timer3 = 1000000;
 int mode = 0;
 int data_to_handle = 0;
 char data;
@@ -48,37 +50,56 @@ void main()
 
 	while(1)
 	{
-		if(data_to_handle){
+		/*if(data_to_handle){
 			data_to_handle = 0;
 			//uart_send(data);
-		}	
+		}*/
+		
+		while(timer3--);
+		timer3 = 1000000;
+		led_toggle(LED_YELLOW);
 	}
 }
 
 void uart_handler(void)
 {		
-	DisableInterrupts; // do i have to do this?
-	data_to_handle = 1;
-	data = uart_read();//modified so it doenst clear.
-	uart_send(data); 
+	//DisableInterrupts; // do i have to do this?
+	uart_send(uart_read());
 	UART2_S1; 	//this
-	UART2_D;	//and this:Clears the RDRF
-	EnableInterrupts;
+	UART2_D;	//and this:Clears the RDRF (Verified to work)
+	NVICICPR1 |= 1 << (49 % 32);  //make sure to clear the interrupt(not needed)
+	while(1) 
+	{	
+		timer2 = 1000000;
+		while(timer2--);
+		timer2 = 1000000;
+		led_toggle(LED_BLUE);
+	}
+	//while(timer2--);
+	//timer2 = 1000000;
+	//led_toggle(LED_BLUE);
+	//data_to_handle = 1;
+	//data = uart_read();//modified so it doenst clear.
+	//uart_send(data); 
+	//UART2_S1; 	//this
+	//UART2_D;	//and this:Clears the RDRF (Verified to work)
+	//EnableInterrupts;
 }
 
 void pit_handler(void)
-{
-	
+{	
+	//PIT_LDVAL0 = 1000000; just for try
+	NVICICPR2 |= 1 << (68 % 32); //make sure to clear the interrupt
 	PIT_TFLG0 = PIT_TFLG_TIF_MASK; //Timer Interrupt Flag cleared only by writing it with 1. Here or down?
-	if(timer >= 10) 
+	NVICICPR2 |= 1 << (68 % 32); //make sure to clear the interrupt 
+	//timer = 1000000;
+	/*while(1) 
 	{
-		led_toggle(LED_BLUE);
-		timer = 0;
-	}
-	timer++;
-	
-	//mode = tsi_update_active_button();//This makes the uart not work properly
-	led_update(mode);
+		while(timer--);
+		timer = 1000000;
+		led_toggle(LED_RED);
+	}*/
+	led_toggle(LED_RED);//will be seen without a timer.. 
 }
 
 void led_update(int led_number)
