@@ -13,6 +13,7 @@
 #include "tsi.h"
 
 #define EnableInterrupts asm(" CPSIE i");
+#define DisableInterrupts asm(" CPSID i");
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
 void __init_hardware()
@@ -37,6 +38,8 @@ void __init_hardware()
 }
 int timer = 0;
 int mode = 0;
+int data_to_handle = 0;
+char data;
 void main()
 {
 	tsi_calibrate_tresholds();
@@ -45,31 +48,37 @@ void main()
 
 	while(1)
 	{
-		int timer = 10000000;
-		while(timer--) ;
-
-		//led_toggle(LED_RED);
+		if(data_to_handle){
+			data_to_handle = 0;
+			//uart_send(data);
+		}	
 	}
 }
 
 void uart_handler(void)
-{
-	uart_send(filter(uart_read(),0));
+{		
+	DisableInterrupts; // do i have to do this?
+	data_to_handle = 1;
+	data = uart_read();//modified so it doenst clear.
+	uart_send(data); 
+	UART2_S1; 	//this
+	UART2_D;	//and this:Clears the RDRF
+	EnableInterrupts;
 }
 
 void pit_handler(void)
 {
 	
-	PIT_TFLG0 = PIT_TFLG_TIF_MASK; //Timer Interrupt Flag cleared only by writing it with 1.
+	PIT_TFLG0 = PIT_TFLG_TIF_MASK; //Timer Interrupt Flag cleared only by writing it with 1. Here or down?
 	if(timer >= 10) 
 	{
-		//led_toggle(LED_BLUE);
+		led_toggle(LED_BLUE);
 		timer = 0;
 	}
 	timer++;
 	
-	    mode = tsi_update_active_button();
-	    led_update(mode);
+	//mode = tsi_update_active_button();//This makes the uart not work properly
+	led_update(mode);
 }
 
 void led_update(int led_number)

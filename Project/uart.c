@@ -35,7 +35,7 @@ void uart_send(char data)
 
 char uart_read()
 {
-	while(!(UART2_S1 & UART_S1_RDRF_MASK)){}           // wait for Receive Data Register Full Flag
+	//while(!(UART2_S1 & UART_S1_RDRF_MASK)){}           // wait for Receive Data Register Full Flag
 	return UART2_D;
 }
 
