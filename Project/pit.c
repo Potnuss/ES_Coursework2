@@ -16,7 +16,7 @@ void pit_init(int time)
 	//NVICIP68 |= 3;
 	//NVICIP17 |= NVIC_IP_PRI2(0);
 	//NVICIP17 = 0x00000003u; //pit prio 3
-	NVICIP17 = 0x00000000u; //pit 0
+	NVICIP17 = 0x000000FEu; //pit Lowest prio
 
 	SIM_SCGC6 |= SIM_SCGC6_PIT_MASK; //PIT clock gate control
 
