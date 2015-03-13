@@ -14,7 +14,7 @@
 
 #define EnableInterrupts asm(" CPSIE i"); //PRIMASK is cleared to 0
 #define DisableInterrupts asm(" CPSID i"); //PRIMASK is set to 1
-#define WaitForInterrupt asm(" CPSIE i"); //Suspend execution and enter a low-power state
+#define WaitForInterrupt asm("WFI"); //Suspend execution and enter a low-power state
 
 
 
@@ -103,6 +103,6 @@ void led_update(int led_number)
 		led_off(i);
 	}
 
-	//Turn on 1 LED
+	//Turn on one LED
 	led_on(led_number);
 }
