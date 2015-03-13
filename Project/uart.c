@@ -3,8 +3,6 @@
 
 void uart_init()
 {
-	
-
 	//Nested Vectored Interrupt Controller 
 	NVICICPR1 |= 1 << (49 % 32); 
 	//NVIC_ICPRn[31:0] are the clear-pending bits for interrupts (31+(32*n)) - (32*n). = 63 - 32

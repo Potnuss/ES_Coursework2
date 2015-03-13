@@ -61,7 +61,7 @@ void tsi_scan()
 	TSI0_GENCS |= TSI_GENCS_EOSF_MASK; //End of Scan Flag. Writing "1" to this bit will clear the flag to 0.	
 }
 
-int tsi_update_active_button()
+int tsi_update_last_active_button()
 {
 	int i;
 	tsi_scan();

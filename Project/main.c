@@ -12,11 +12,12 @@
 #include "pit.h"
 #include "tsi.h"
 
-#define EnableInterrupts asm(" CPSIE i");
-#define DisableInterrupts asm(" CPSID i");
- //PRIMASK is set to 1 by the execution of the instruction CPSID i
-//PRIMASK is cleared to 0 by the execution of the instruction CPSIE i.
- 
+#define EnableInterrupts asm(" CPSIE i"); //PRIMASK is cleared to 0
+#define DisableInterrupts asm(" CPSID i"); //PRIMASK is set to 1
+#define WaitForInterrupt asm(" CPSIE i"); //Suspend execution and enter a low-power state
+
+
+
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
 void __init_hardware()
@@ -32,64 +33,76 @@ void __init_hardware()
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(0) | SIM_CLKDIV1_OUTDIV3(1) | SIM_CLKDIV1_OUTDIV4(1);
 	MCG_C1 = MCG_C1_CLKS(2);
 	
-	
+	//Initializations
 	uart_init();
 	led_init();
 	fpu_init();
 	pit_init(1000000);
 	tsi_init();
 }
-int timer = 1000000;
-int timer2 = 1000000;
-int timer3 = 1000000;
-int mode = 0;
-int pit_occurred = 0;
-int data_to_handle = 0;
-char data;
+
+//Global variables
+int mode = 0; //Choosed filter
+int pit_occurred = 0; //Flag: PIT-interrupt has occoard
+
 void main()
 {
+	//Calibrate capacitive buttons
 	tsi_calibrate_tresholds();
-	EnableInterrupts;
 
+	//Allows interrupts to happen
+	EnableInterrupts; 
 
 	while(1)
-	{
-		if(data_to_handle)
-		{
-			data_to_handle = 0;
-			//uart_send(filter(data,mode));
-		}
+	{	
+		// If PIT-interrupt has occoard
 		if(pit_occurred)
 		{	
+			//Clear flag PIT-interrupt has been handled
 			pit_occurred = 0;
-			mode = tsi_update_active_button();//Some bug while running this
-			led_update(mode);
 
+			//Scan touchbuttons and see which one that was last pressed
+			mode = tsi_update_last_active_button();
+
+			//Update the leds to show wich filter mode that is active:
+			led_update(mode);
 		}
+
+		/*Suspend execution and enter a low-power state
+		and wait for interrupt.*/
+		WaitForInterrupt;
 	}
 }
 
 void uart_handler(void)
-{		
+{
+	//Get new data, filter it, and send result over uart
+	uart_send(filter(uart_read(),mode));
 
-	data = uart_read();//modified so it doenst clear.
-	uart_send(filter(data,mode));
-	UART2_S1; 	//this
-	UART2_D;	//and this:Clears the RDRF (Verified to work)
-	data_to_handle = 1;
+	//This sequence clears the uart interrupt (RDRF)
+	UART2_S1; 	//Step 1, Read UART Status Register 1
+	UART2_D;	//Step 2, Read UART Data Register
 }
 
 void pit_handler(void)
 {	
+	//Set flag PIT-interrupt has occoard
 	pit_occurred = 1;
-	PIT_TFLG0 = PIT_TFLG_TIF_MASK; //Timer Interrupt Flag cleared only by writing it with 1. Here or down?
+	
+	//Clear Timer Interrupt Flag 
+	PIT_TFLG0 = PIT_TFLG_TIF_MASK; 
 }
+
 
 void led_update(int led_number)
 {
 	int i;
+
+	//Turn of all LEDs
 	for(i=0;i< NUMBER_OF_LEDS ;i++){
 		led_off(i);
 	}
+
+	//Turn on 1 LED
 	led_on(led_number);
 }
