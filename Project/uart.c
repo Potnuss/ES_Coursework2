@@ -14,7 +14,7 @@ void uart_init()
 
 	//NVICIP65 |= 2;//Interrupt Priority Registers
 	//NVICIP12 |= NVIC_IP_PRI3(1);
-	NVICIP12 = 0x00000000u; //uart prio highest
+	NVICIP49 = 0x00; //uart prio highest
 
 	//Uart init
 	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;  // Enable PORTE clock 

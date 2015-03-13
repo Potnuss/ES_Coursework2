@@ -14,6 +14,9 @@
 
 #define EnableInterrupts asm(" CPSIE i");
 #define DisableInterrupts asm(" CPSID i");
+ //PRIMASK is set to 1 by the execution of the instruction CPSID i
+//PRIMASK is cleared to 0 by the execution of the instruction CPSIE i.
+ 
 // __init_hardware is called by the Freescale __thumb_startup function (see 
 // vectors.c)
 void __init_hardware()
@@ -54,12 +57,12 @@ void main()
 		if(data_to_handle)
 		{
 			data_to_handle = 0;
-			uart_send(filter(data,mode));
+			//uart_send(filter(data,mode));
 		}
 		if(pit_occurred)
 		{	
 			pit_occurred = 0;
-			//mode = tsi_update_active_button();//Some bug while running this
+			mode = tsi_update_active_button();//Some bug while running this
 			led_update(mode);
 
 		}
@@ -70,6 +73,7 @@ void uart_handler(void)
 {		
 
 	data = uart_read();//modified so it doenst clear.
+	uart_send(filter(data,mode));
 	UART2_S1; 	//this
 	UART2_D;	//and this:Clears the RDRF (Verified to work)
 	data_to_handle = 1;
@@ -78,9 +82,7 @@ void uart_handler(void)
 void pit_handler(void)
 {	
 	pit_occurred = 1;
-	NVICICPR2 |= 1 << (68 % 32); //make sure to clear the interrupt//Needed?
 	PIT_TFLG0 = PIT_TFLG_TIF_MASK; //Timer Interrupt Flag cleared only by writing it with 1. Here or down?
-	NVICICPR2 |= 1 << (68 % 32); //make sure to clear the interrupt //Needed?
 }
 
 void led_update(int led_number)

@@ -21,12 +21,13 @@ void tsi_init()
 	//Touch Sensing Input Module Disable - while setup
 	TSI0_GENCS &= ~TSI_GENCS_TSIEN_MASK;
 
-	//General Control and Status Register TSI0
+	//General Control and Status Register TSI0 p2164
 	//Electrode Oscillator Frequency divided by 1 (says 2 in pm)
 	//Number of Consecutive Scans per electrode - 16 times 
-	// Scan Trigger Mode. 0 Software trigger scan 1 Periodical Scan.
-	//End of Scan Flag. Need to reset?
-	//TSI0_GENCS |= TSI_GENCS_PS(0) | TSI_GENCS_NSCN(15) | TSI_GENCS_STM_MASK | TSI_GENCS_EOSF_MASK; //Periodical Scan
+	//Scan Trigger Mode. 0 Software trigger scan 1 Periodical Scan.
+	// End-of-Scan flag Need to reset?
+	//TSI0_GENCS |= TSI_GENCS_PS(0) | TSI_GENCS_NSCN(15) | TSI_GENCS_STM_MASK | TSI_GENCS_EOSF_MASK; //Periodical Scan, Work divide by 1
+	//TSI0_GENCS |= TSI_GENCS_PS(1) | TSI_GENCS_NSCN(15) | TSI_GENCS_STM_MASK | TSI_GENCS_EOSF_MASK; //Periodical Scan, Works divide by 2
 	TSI0_GENCS |= TSI_GENCS_PS(1) | TSI_GENCS_NSCN(15) | TSI_GENCS_EOSF_MASK;//Software trigger scan
 
 	//SCAN Control Register
