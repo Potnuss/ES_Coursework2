@@ -3,51 +3,62 @@
 
 void uart_init()
 {
-	//Nested Vectored Interrupt Controller 
+	/*Enable UART2 interrupt in Nested Vectored Interrupt Controller 
+	UART2: IRQ49 and Vector65*/
+
+	//Clear potentially pending PIT interrupts
 	NVICICPR1 |= 1 << (49 % 32); 
-	//NVIC_ICPRn[31:0] are the clear-pending bits for interrupts (31+(32*n)) - (32*n). = 63 - 32
 
+	//Enable UART2 interrupts
 	NVICISER1 |= 1 << (49 % 32); //Interrupt Set-Enable Registers
-	//NVIC_ISERn[31:0] are the set-enable bits for interrupts (31+(32*n)) - (32*n). = 63 - 32
 
-	//NVICIP65 |= 2;//Interrupt Priority Registers
-	//NVICIP12 |= NVIC_IP_PRI3(1);
-	NVICIP49 = 0x00; //uart prio highest
+	//Set Priority for UART2 interrupts
+	//Group Priority 0 (with settings:bits7-4 Group, bits 3-0 subgroup)
+	NVICIP49 = 0x00; 
 
-	//Uart init
-	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;  // Enable PORTE clock 
-	SIM_SCGC4 |= SIM_SCGC4_UART2_MASK; //Enable the clock signal
+
+	// Enable clock gating to the correct pin port (E)
+	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;
+
+	//Enable the clock signal for UART2
+	SIM_SCGC4 |= SIM_SCGC4_UART2_MASK; 
 	
-	UART2_BDL = 27; //select baud rate
+	/*Select baud rate 115200
+		UART baud rate = (50*10^6) / (16 × 27) = 115740 --> 0.5% error
+		UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))*/
+	UART2_BDL = 27; 
 	
-	UART2_C2 |= UART_C2_RIE_MASK;//Enable Interrupt when recieve data//TODO better comment
+	//Enables: Generate interrupt requests when new data is recieved 
+	UART2_C2 |= UART_C2_RIE_MASK;
 
-	UART2_C2 |= UART_C2_TE_MASK; //TE enables the UART transmitter
-	UART2_C2 |= UART_C2_RE_MASK; //RE enables the UART receiver.
-
-
+	//Enables the UART transmitter and receiver
+	UART2_C2 |= UART_C2_TE_MASK; 
+	UART2_C2 |= UART_C2_RE_MASK;
 
 	// Configure the UART pins to be 
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
 	PORTE_PCR16 = PORT_PCR_MUX(3);//transmission	
-	
-
-
 }
 
 void uart_send(char data)
 {	
-	while(!(UART2_S1 & UART_S1_TDRE_MASK )){}          // wait for Transmit Data Register Empty Flag
+	//Wait for Transmit Data Register Empty Flag
+	while(!(UART2_S1 & UART_S1_TDRE_MASK )){}
+
+	//Send data over UART2     
 	UART2_D = data;
 }
 
+/*Note that if UART2_S1 recently has been read, followed by a read of UART2_D, 
+this will result in clearing the uart interrupt (RDRF)*/
 char uart_read()
-{
-	//while(!(UART2_S1 & UART_S1_RDRF_MASK)){}           // wait for Receive Data Register Full Flag
+{	
+	//Read data from UART2
 	return UART2_D;
 }
 
 int uart_new_data()
-{
-	return (UART2_S1 & UART_S1_RDRF_MASK);           // return Receive Data Register Full Flag
+{	
+	//Return Receive Data Register Full Flag
+	return (UART2_S1 & UART_S1_RDRF_MASK);           
 }

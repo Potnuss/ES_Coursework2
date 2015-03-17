@@ -1,3 +1,6 @@
+/*
+ * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ */
 #include "pit.h"
 #include "MK70F12.h"
 
@@ -13,9 +16,8 @@ void pit_init(int time)
 	NVICISER2 |= 1 << (68 % 32);
 
 	//Set Priority for PIT interrupts
-	NVICIP68 = 0x10; //Group Priority 1
-
-
+	//Group Priority 1 (with settings:bits7-4 Group, bits 3-0 subgroup)
+	NVICIP68 = 0x10; 
 
 	//PIT clock gate control
 	SIM_SCGC6 |= SIM_SCGC6_PIT_MASK; 

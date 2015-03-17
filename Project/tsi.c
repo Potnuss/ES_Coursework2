@@ -4,50 +4,58 @@
 
 #define NUMBER_OF_BUTTONS 4
 
+//Stores the treshold value (for beeing touched) for each button
 int button_thresholds[4] = {0,0,0,0};
+
+//Stores the last pushed button
 int last_active_button = 0;
+
 
 void tsi_init()
 {
-
+	// Enable the clock signal for TSI unit
+	// Enable clock gating to the correct pin ports (A and B)
 	SIM_SCGC5 |= SIM_SCGC5_TSI_MASK | SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK;
 
-	//I/O Connectors
-	PORTA_PCR4 = PORT_PCR_MUX(0); //E1Touch Alt0
-	PORTB_PCR3 = PORT_PCR_MUX(0); //E2Touch Alt0
-	PORTB_PCR2 = PORT_PCR_MUX(0); //E3Touch Alt0
-	PORTB_PCR16 = PORT_PCR_MUX(0); //E4Touch Alt0
+	//Multiplexing and Pin Assignments
+	PORTA_PCR4 = PORT_PCR_MUX(0); //E1Touch Alt0 for TSI0_CH5
+	PORTB_PCR3 = PORT_PCR_MUX(0); //E2Touch Alt0 for TSI0_CH8
+	PORTB_PCR2 = PORT_PCR_MUX(0); //E3Touch Alt0 for TSI0_CH7
+	PORTB_PCR16 = PORT_PCR_MUX(0); //E4Touch Alt0 for TSI0_CH9
 
-	//Touch Sensing Input Module Disable - while setup
+	//Touch Sensing Input Module Disable - during setup 
 	TSI0_GENCS &= ~TSI_GENCS_TSIEN_MASK;
 
-	//General Control and Status Register TSI0 p2164
-	//Electrode Oscillator Frequency divided by 1 (says 2 in pm)
-	//Number of Consecutive Scans per electrode - 16 times 
-	//Scan Trigger Mode. 0 Software trigger scan 1 Periodical Scan.
-	// End-of-Scan flag Need to reset?
-	//TSI0_GENCS |= TSI_GENCS_PS(0) | TSI_GENCS_NSCN(15) | TSI_GENCS_STM_MASK | TSI_GENCS_EOSF_MASK; //Periodical Scan, Work divide by 1
-	//TSI0_GENCS |= TSI_GENCS_PS(1) | TSI_GENCS_NSCN(15) | TSI_GENCS_STM_MASK | TSI_GENCS_EOSF_MASK; //Periodical Scan, Works divide by 2
-	TSI0_GENCS |= TSI_GENCS_PS(1) | TSI_GENCS_NSCN(15) | TSI_GENCS_EOSF_MASK;//Software trigger scan
+	//General Control and Status Register TSI0 (page 2164)
+	// Note that: Software trigger scan by default (STM=0)
+	//PS: Electrode Oscillator Frequency divided by 2
+	//NSCN: Number of Consecutive Scans per electrode - 16 times
+	//EOSF: End-of-Scan flag reset (just for sure)
+	TSI0_GENCS |= TSI_GENCS_PS(1) | TSI_GENCS_NSCN(15) | TSI_GENCS_EOSF_MASK;
 
 	//SCAN Control Register
-	//External OSC Charge Current 12 μA
-	//Ref OSC Charge Current 24 μA
-	//Active Mode Prescaler Input Clock Source divided by 4.
-	//Active Mode Clock Source - External Oscillator 0
+	//EXTCHRG: External OSC Charge Current 12 μA
+	//REFCHRG: Ref OSC Charge Current 24 μA
+	//AMPSC: Active Mode Prescaler Input Clock Source divided by 4.
+	//AMCLKS: Active Mode Clock Source - External Oscillator 0
 	TSI0_SCANC |= TSI_SCANC_EXTCHRG(5) | TSI_SCANC_REFCHRG(11) | TSI_SCANC_AMPSC(2) | TSI_SCANC_AMCLKS(2); 
 
-	// Pin Enable Register 5,7,8,9
+	// Pin Enable Register 5,7,8,9 The corresponding pins is used by TSI.
 	TSI0_PEN |= TSI_PEN_PEN5_MASK | TSI_PEN_PEN7_MASK | TSI_PEN_PEN8_MASK | TSI_PEN_PEN9_MASK;
 
-	//Touch Sensing Input Module Enable again
+	//Touch Sensing Input Module Enable
 	TSI0_GENCS |= TSI_GENCS_TSIEN_MASK;
 }
 
 void tsi_calibrate_tresholds() 
 {
 	int i;
+
+	//Scan to get the initial scan values
+	//NOTE: Do not touch buttons during this time!
 	tsi_scan();
+
+
 	for(i = 0; i < NUMBER_OF_BUTTONS; i++) {
 		button_thresholds[i] = tsi_get_value_from_button(i) + tsi_get_value_from_button(i)/50;
 	}
