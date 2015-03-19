@@ -1,3 +1,7 @@
+/*
+ * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ * Embedded Systems, University of Edinburgh
+ */
 #include "uart.h"
 #include "MK70F12.h"
 
@@ -9,8 +13,8 @@ void uart_init()
 	//Clear potentially pending PIT interrupts
 	NVICICPR1 |= 1 << (49 % 32); 
 
-	//Enable UART2 interrupts
-	NVICISER1 |= 1 << (49 % 32); //Interrupt Set-Enable Registers
+	//Enable UART2 interrupts, Interrupt Set-Enable Registers
+	NVICISER1 |= 1 << (49 % 32);
 
 	//Set Priority for UART2 interrupts
 	//Group Priority 0 (with settings:bits7-4 Group, bits 3-0 subgroup)
@@ -25,7 +29,9 @@ void uart_init()
 	
 	/*Select baud rate 115200
 		UART baud rate = (50*10^6) / (16 × 27) = 115740 --> 0.5% error
-		UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))*/
+		UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))
+		where BDL is part of SBR 
+		NOTE: BDL and BRFD has to be zero(they are as default after reset)*/
 	UART2_BDL = 27; 
 	
 	//Enables: Generate interrupt requests when new data is recieved 

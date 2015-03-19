@@ -1,3 +1,7 @@
+/*
+ * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ * Embedded Systems, University of Edinburgh
+ */
 #include "MK70F12.h"
 #include "tsi.h"
 #include "led.h"
@@ -5,7 +9,7 @@
 #define NUMBER_OF_BUTTONS 4
 
 //Stores the treshold value (for beeing touched) for each button
-int button_thresholds[4] = {0,0,0,0};
+int button_thresholds[4] = {0,0,0,0}; //TODO add NUMBER_OF_BUTTONS instead
 
 //Stores the last pushed button
 int last_active_button = 0;
@@ -55,7 +59,7 @@ void tsi_calibrate_tresholds()
 	//NOTE: Do not touch buttons during this time!
 	tsi_scan();
 
-
+	//Set the treshold for being touched to 1.02 * Not_Touched_Value for each button
 	for(i = 0; i < NUMBER_OF_BUTTONS; i++) {
 		button_thresholds[i] = tsi_get_value_from_button(i) + tsi_get_value_from_button(i)/50;
 	}
@@ -64,22 +68,39 @@ void tsi_calibrate_tresholds()
 
 void tsi_scan()
 {
-	TSI0_GENCS |= TSI_GENCS_SWTS_MASK; // Software Trigger Start, Start scan
-	while(!(TSI0_GENCS & TSI_GENCS_EOSF_MASK)); // wait for End of Scan Flag.
-	TSI0_GENCS |= TSI_GENCS_EOSF_MASK; //End of Scan Flag. Writing "1" to this bit will clear the flag to 0.	
+	// Software Trigger Start, Start scan
+	TSI0_GENCS |= TSI_GENCS_SWTS_MASK; 
+
+	// Wait for End of Scan Flag.
+	while(!(TSI0_GENCS & TSI_GENCS_EOSF_MASK)); 
+
+	//Clear End of Scan Flag. Writing "1" to this bit will clear the flag to 0.	
+	TSI0_GENCS |= TSI_GENCS_EOSF_MASK; 
 }
 
 int tsi_update_last_active_button()
 {
 	int i;
+
+	//Scan the buttons
 	tsi_scan();
+
+	//If a button were touched during scan, update the last_active_button
+	//Note: If many buttons were touched during scan, 
+	//the button with the highest index will be returned.
 	for(i = 0; i < NUMBER_OF_BUTTONS; i++) {
 		if(tsi_get_value_from_button(i) > button_thresholds[i]) 
 			last_active_button = i;
 	}		
+
+	//Return the last active/touched button
 	return last_active_button;		
 }
 
+/*
+ * Returns the value of TouchSensing 16-bit counter value from 
+ * TSI Counter Register for the wanted button.
+ */
 int tsi_get_value_from_button(int button) {
     switch (button) {
         case 0: return ((TSI0_CNTR5 & TSI_CNTR5_CTN_MASK) >> (TSI_CNTR5_CTN_SHIFT));
@@ -87,5 +108,4 @@ int tsi_get_value_from_button(int button) {
         case 2: return ((TSI0_CNTR7 & TSI_CNTR7_CTN_MASK) >> (TSI_CNTR7_CTN_SHIFT));
         case 3: return ((TSI0_CNTR9 & TSI_CNTR9_CTN_MASK) >> (TSI_CNTR9_CTN_SHIFT));
     }
-//    return -1;
 }

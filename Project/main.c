@@ -1,5 +1,6 @@
 /*
  * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ * Embedded Systems, University of Edinburgh
  * Realtime Audio (8khz) filtering (Bandpass) over UART with baudrate baud rate 115200 
  * 
  * Based on Bare metal template created by Harry Wagstaff

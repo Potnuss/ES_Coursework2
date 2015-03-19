@@ -1,3 +1,7 @@
+/*
+ * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ * Embedded Systems, University of Edinburgh
+ */
 #include "main.h"
 #include "vectors.h"
 #include "MK70F12.h"
@@ -114,7 +118,7 @@ volatile __declspec(vectortable) vt_with_sp_t __vect_table = {
 		default_isr,  		// 0x3E UART0_ERR
 		default_isr, 		// 0x3F UART1_RX_TX
 		default_isr,  		// 0x40 UART1_ERR 
-		uart_handler,//default_isr,	 	// 0x41 UART2_RX_TX
+		uart_handler,	 	// 0x41 UART2_RX_TX
 		default_isr,  		// 0x42 UART2_ERR
 		default_isr, 		// 0x43 UART3_RX_TX
 		default_isr,  		// 0x44 UART3_ERR
@@ -133,7 +137,7 @@ volatile __declspec(vectortable) vt_with_sp_t __vect_table = {
 		default_isr,  		// 0x51 CMT
 		default_isr,  		// 0x52 RTC
 		default_isr,  		// 0x53 Reserved
-		pit_handler,//default_isr,		// 0x54 PIT0
+		pit_handler,		// 0x54 PIT0
 		default_isr,  		// 0x55 PIT1
 		default_isr,  		// 0x56 PIT2
 		default_isr,  		// 0x57 PIT3

@@ -1,3 +1,7 @@
+/*
+ * ES Coursework Part 2, created by Pontus Petersson, March 2015
+ * Embedded Systems, University of Edinburgh
+ */
 #include "led.h"
 #include "MK70F12.h"
 
