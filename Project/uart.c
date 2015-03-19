@@ -5,6 +5,10 @@
 #include "uart.h"
 #include "MK70F12.h"
 
+/*
+ * NOTE: Needs the UART module clock to run in 50Mhz
+ * NOTE: UART2_BDH and UART2_BRFD has to be zero(they are as default after reset)
+ */
 void uart_init()
 {
 	/*Enable UART2 interrupt in Nested Vectored Interrupt Controller 
@@ -28,10 +32,10 @@ void uart_init()
 	SIM_SCGC4 |= SIM_SCGC4_UART2_MASK; 
 	
 	/*Select baud rate 115200
-		UART baud rate = (50*10^6) / (16 × 27) = 115740 --> 0.5% error
-		UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))
-		where BDL is part of SBR 
-		NOTE: BDL and BRFD has to be zero(they are as default after reset)*/
+	 * UART baud rate = (50*10^6) / (16 × 27) = 115740 --> 0.5% error
+	 * UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))
+	 * where BDL is part of SBR 
+	 */
 	UART2_BDL = 27; 
 	
 	//Enables: Generate interrupt requests when new data is recieved 
@@ -61,10 +65,4 @@ char uart_read()
 {	
 	//Read data from UART2
 	return UART2_D;
-}
-
-int uart_new_data()
-{	
-	//Return Receive Data Register Full Flag
-	return (UART2_S1 & UART_S1_RDRF_MASK);           
 }

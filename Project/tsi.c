@@ -9,7 +9,7 @@
 #define NUMBER_OF_BUTTONS 4
 
 //Stores the treshold value (for beeing touched) for each button
-int button_thresholds[4] = {0,0,0,0}; //TODO add NUMBER_OF_BUTTONS instead
+int button_thresholds[NUMBER_OF_BUTTONS] = {0,0,0,0}; 
 
 //Stores the last pushed button
 int last_active_button = 0;
@@ -51,17 +51,19 @@ void tsi_init()
 	TSI0_GENCS |= TSI_GENCS_TSIEN_MASK;
 }
 
+/*
+ * NOTE: Do not touch buttons when calling this function!
+ */
 void tsi_calibrate_tresholds() 
 {
 	int i;
 
 	//Scan to get the initial scan values
-	//NOTE: Do not touch buttons during this time!
 	tsi_scan();
 
-	//Set the treshold for being touched to 1.02 * Not_Touched_Value for each button
+	//Set the treshold for being touched to 110% of "value when not touched" for each button
 	for(i = 0; i < NUMBER_OF_BUTTONS; i++) {
-		button_thresholds[i] = tsi_get_value_from_button(i) + tsi_get_value_from_button(i)/50;
+		button_thresholds[i] = tsi_get_value_from_button(i) + tsi_get_value_from_button(i)/20;
 	}
 }
 
@@ -78,6 +80,10 @@ void tsi_scan()
 	TSI0_GENCS |= TSI_GENCS_EOSF_MASK; 
 }
 
+/*
+ * Note: If many buttons were touched during scan, 
+ * the button with the highest index will be returned.
+ */
 int tsi_update_last_active_button()
 {
 	int i;
@@ -86,8 +92,6 @@ int tsi_update_last_active_button()
 	tsi_scan();
 
 	//If a button were touched during scan, update the last_active_button
-	//Note: If many buttons were touched during scan, 
-	//the button with the highest index will be returned.
 	for(i = 0; i < NUMBER_OF_BUTTONS; i++) {
 		if(tsi_get_value_from_button(i) > button_thresholds[i]) 
 			last_active_button = i;

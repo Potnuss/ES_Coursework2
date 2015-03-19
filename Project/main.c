@@ -33,7 +33,7 @@ void __init_hardware()
 	WDOG_UNLOCK = 0xD928;
 	WDOG_STCTRLH = 0xD2;
 
-	// Configure the MCG - set up clock dividers on 
+	// Configure the MCG - set up clock dividers on (50MHz Ethernet board)
 	SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(0) | SIM_CLKDIV1_OUTDIV3(1) | SIM_CLKDIV1_OUTDIV4(1);
 	MCG_C1 = MCG_C1_CLKS(2);
 	

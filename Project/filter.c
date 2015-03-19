@@ -18,7 +18,7 @@
 
 #define NZEROS 2 //Number of zeros in filter
 #define NPOLES 2 //Number of poles in filter
-#define NUM_OF_FILTERS //TODO add a value and test
+#define NUM_OF_FILTERS 4
 
 //Filter Coefficients for filter 0
 #define GAIN0 5.962907802e+00
@@ -46,8 +46,8 @@ float A[NUM_OF_FILTERS] = {A0,A1,A2,A3};
 float B[NUM_OF_FILTERS] = {B0,B1,B2,B3};
 
 //Sample buffers for inputs and outputs
-static float xv[NZEROS+1]; 
-static float yv[NPOLES+1];
+static float xv[NZEROS+1]= {0,0,0}; 
+static float yv[NPOLES+1]= {0,0,0};
 
   extern signed char filter(signed char input, int mode)
   { 
