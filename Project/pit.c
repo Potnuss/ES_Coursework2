@@ -5,6 +5,13 @@
 #include "pit.h"
 #include "MK70F12.h"
 
+/*
+ * Function:  pit_init
+ * --------------------
+ * Initializes the PIT  
+ * The input value "time" will generate a interrupt every ("time")/("Clock freq") seconds
+ * NOTE: Clear potentially pending PIT interrupts
+ */
 void pit_init(int time)
 {
 	/*Enable PIT interrupt in Nested Vectored Interrupt Controller 

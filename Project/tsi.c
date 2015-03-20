@@ -14,7 +14,12 @@ int button_thresholds[NUMBER_OF_BUTTONS] = {0,0,0,0};
 //Stores the last pushed button
 int last_active_button = 0;
 
-
+/*
+ * Function:  tsi_init
+ * --------------------
+ * Initializes the TSI to be in software trigger mode
+ * Note: Software trigger scan by default. This function assumes that STM has the default value (STM=0).
+ */
 void tsi_init()
 {
 	// Enable the clock signal for TSI unit
@@ -52,7 +57,12 @@ void tsi_init()
 }
 
 /*
+ * Function:  tsi_calibrate_tresholds
+ * --------------------
+ * Calibrate the "being touched treshold" for each button. 
+ * Sets the "being touched treshold" to 110% of "value when not touched" for each button
  * NOTE: Do not touch buttons when calling this function!
+ * NOTE: Calls tsi_scan(). See comments for tsi_scan().
  */
 void tsi_calibrate_tresholds() 
 {
@@ -67,7 +77,13 @@ void tsi_calibrate_tresholds()
 	}
 }
 
-
+/*
+ * Function:  tsi_scan
+ * --------------------
+ * Scans the active touchbuttons
+ * NOTE: Wait for End of Scan Flag can take some time, 
+ * 	and it will be stuck in that while loop until scan is finnished!
+ */
 void tsi_scan()
 {
 	// Software Trigger Start, Start scan
@@ -81,8 +97,13 @@ void tsi_scan()
 }
 
 /*
- * Note: If many buttons were touched during scan, 
+ * Function:  tsi_update_last_active_button
+ * --------------------
+ * Performs a scan, checks if a button is touched.
+ * If many buttons were touched during scan, 
  * the button with the highest index will be returned.
+ *
+ *  returns: the index of the active/touched button 
  */
 int tsi_update_last_active_button()
 {
@@ -102,8 +123,10 @@ int tsi_update_last_active_button()
 }
 
 /*
- * Returns the value of TouchSensing 16-bit counter value from 
- * TSI Counter Register for the wanted button.
+ * Function:  tsi_get_value_from_button
+ * --------------------
+ *  returns: the value of TouchSensing 16-bit counter value from 
+ * 	TSI Counter Register for the wanted button
  */
 int tsi_get_value_from_button(int button) {
     switch (button) {

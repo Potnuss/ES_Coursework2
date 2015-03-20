@@ -5,6 +5,11 @@
 #include "led.h"
 #include "MK70F12.h"
 
+/*
+ * Function: led_init
+ * --------------------
+ * Initilizes the leds on the board.
+ */
 void led_init()
 {
 	// Enable clock gating to the correct pin port
@@ -23,6 +28,11 @@ void led_init()
 	GPIOA_PDOR = (1 << 11) | (1 << 10) | (1 << 28) | (1 << 29);
 }
 
+/*
+ * Function:  led_on
+ * --------------------
+ * Turns on the given led
+ */
 void led_on(int led_id)
 {
 	switch(led_id)
@@ -42,6 +52,11 @@ void led_on(int led_id)
 	}
 }
 
+/*
+ * Function:  led_off
+ * --------------------
+ * Turns off the given led
+ */
 void led_off(int led_id)
 {
 	switch(led_id)
@@ -61,6 +76,11 @@ void led_off(int led_id)
 	}
 }
 
+/*
+ * Function:  led_toggle
+ * --------------------
+ * Toggles the given led
+ */
 void led_toggle(int led_id)
 {
 	switch(led_id)

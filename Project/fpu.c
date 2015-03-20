@@ -7,7 +7,8 @@
 #include "MK70F12.h"
 
 /* 
- * fpu_init()
+ * Function:  fpu_init
+ * --------------------
  * Enabling access to the Floating-point coprocessor.
  * Coprocessor Access Control Register
  * Fields CP10 and CP11 together control access to the FPU

@@ -4,11 +4,6 @@
  * Digital filter designed by mkfilter/mkshape/gencode   A.J. Fisher
  * Command line: /www/usr/fisher/helpers/mkfilter -Bu -Bp -o 1 -a 6.2500000000e-02 1.2500000000e-01 -l 
  *
- * filtertype = Butterworth
- * passtype = Bandpass
- * order = 1
- * samplerate = 8000hz
- *
  * Corner frequencies filter 0 = 500Hz 1000Hz
  * Corner frequencies filter 1 = 1500Hz 1750Hz
  * Corner frequencies filter 2 = 2000Hz 2500Hz
@@ -49,6 +44,18 @@ float B[NUM_OF_FILTERS] = {B0,B1,B2,B3};
 static float xv[NZEROS+1]= {0,0,0}; 
 static float yv[NPOLES+1]= {0,0,0};
 
+/*
+ * Function:  filter
+ * --------------------
+ * Filters a signed 8-bit stream, takes one sample and produces one sample
+ *
+ * filtertype = Butterworth
+ * passtype = Bandpass
+ * order = 1
+ * samplerate = 8000hz
+ *
+ *  returns: next output sample 
+ */
   extern signed char filter(signed char input, int mode)
   { 
     //Shift old input samples

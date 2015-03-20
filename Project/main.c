@@ -78,6 +78,13 @@ void main()
 	}
 }
 
+/*
+ * Function:  uart_handler
+ * --------------------
+ * This function is called when a UART2 interrupt occurs.
+ * Reads new data, produces new filter output and send that byte over uart2.
+ * Clears interrupt flag in the end.
+ */
 void uart_handler(void)
 {
 	//Get new data, filter it, and send result over uart
@@ -88,6 +95,13 @@ void uart_handler(void)
 	UART2_D;	//Step 2, Read UART Data Register
 }
 
+/*
+ * Function:  pit_handler
+ * --------------------
+ * This function is called when a PIT interrupt occours.
+ * Sets pit_occurred flag
+ * Clears interrupt flag in the end.
+ */
 void pit_handler(void)
 {	
 	//Set flag PIT-interrupt has occoard
@@ -97,7 +111,11 @@ void pit_handler(void)
 	PIT_TFLG0 = PIT_TFLG_TIF_MASK; 
 }
 
-
+/*
+ * Function:  led_update
+ * --------------------
+ * Make sure that the correct led is turned on and the other ones are turned off.
+ */
 void led_update(int led_number)
 {
 	int i;

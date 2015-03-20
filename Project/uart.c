@@ -6,6 +6,14 @@
 #include "MK70F12.h"
 
 /*
+ * Function:  uart_init
+ * --------------------
+ * Initializes UART2, makes transmit and recieve work
+ *
+ * Sets Baud rate to 115200
+ * UART baud rate = (50*10^6) / (16 × 27) = 115740 --> 0.5% error
+ * UART baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))
+ *
  * NOTE: Needs the UART module clock to run in 50Mhz
  * NOTE: UART2_BDH and UART2_BRFD has to be zero(they are as default after reset)
  */
@@ -49,7 +57,11 @@ void uart_init()
 	PORTE_PCR17 = PORT_PCR_MUX(3);//receiver
 	PORTE_PCR16 = PORT_PCR_MUX(3);//transmission	
 }
-
+/*
+ * Function:  uart_send
+ * --------------------
+ * Sends one byte over UART2
+ */
 void uart_send(char data)
 {	
 	//Wait for Transmit Data Register Empty Flag
@@ -59,8 +71,14 @@ void uart_send(char data)
 	UART2_D = data;
 }
 
-/*Note that if UART2_S1 recently has been read, followed by a read of UART2_D, 
-this will result in clearing the uart interrupt (RDRF)*/
+/*
+ * Function:  uart_read
+ * --------------------
+ * Read one byte from UART2
+ * NOTE: if UART2_S1 recently has been read, followed by a read of UART2_D, 
+ *	this will result in clearing the uart interrupt (RDRF)
+ *  returns: the recieved byte 
+ */
 char uart_read()
 {	
 	//Read data from UART2
